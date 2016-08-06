@@ -1,6 +1,7 @@
 'use strict';
 
 var electron = require("electron");
+var ping = require('ping');
 
 const {app, BrowserWindow, Tray, Menu, ipcMain, ipcRenderer} = require('electron')
 const path = require('path');
@@ -12,10 +13,12 @@ let mainWindow = null;
 
 function createWindow () {
   // Create the browser window.
-  win = new BrowserWindow({show: false});
+  win = new BrowserWindow();
   appIcon = new Tray(iconPath);
 
   var contextMenu = Menu.buildFromTemplate([
+    { label: "Good"
+    },
     { label: 'Quit',
       click: function() {
           app.quit()
@@ -24,6 +27,10 @@ function createWindow () {
   ]);
   appIcon.setToolTip('This is my application.');
   appIcon.setContextMenu(contextMenu);
+  appIcon.setHighlightMode('always')
+  setTimeout(function(){
+      appIcon.setHighlightMode('always')
+  }, 5000);
 }
 
 // This method will be called when Electron has finished
@@ -51,3 +58,15 @@ app.on('activate', () => {
 ipcMain.on('close-main-window', function () {
     app.quit();
 });
+
+
+var hosts = ['8.8.8.8'];
+
+setInterval(function(){
+    hosts.forEach(function (host) {
+        ping.promise.probe(host)
+            .then(function (res) {
+                console.log(res);
+            });
+    });
+}, 2000)
